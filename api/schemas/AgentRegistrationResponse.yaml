@@ -1,0 +1,41 @@
+type: object
+properties:
+  id:
+    type: string
+    example: "local-agent"
+  name:
+    type: string
+    example: "OpsNexus Local Agent"
+  hostname:
+    type: string
+    example: "localhost"
+  os:
+    type: string
+    example: "linux"
+  arch:
+    type: string
+    example: "amd64"
+  version:
+    type: string
+    example: "0.1.0"
+  status:
+    type: string
+    example: "online"
+  last_seen:
+    type: string
+    format: date-time
+    example: "2026-08-08T20:00:00Z"
+  created_at:
+    type: string
+    format: date-time
+    example: "2026-08-08T20:00:00Z"
+required:
+  - id
+  - name
+  - hostname
+  - os
+  - arch
+  - version
+  - status
+  - last_seen
+  - created_at

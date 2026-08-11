@@ -1,0 +1,268 @@
+openapi: 3.1.0
+info:
+  title: OpsNexus Infrastructure & Observability API
+  description: API contract specification for opsnexus-agent, opsnexus-backend, and opsnexus-dashboard.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local development backend server
+paths:
+  /api/v1/events:
+    get:
+      summary: Server-Sent Events real-time stream
+      description: Establishes a persistent SSE connection to stream live telemetry updates, status changes, and alert events.
+      operationId: streamEvents
+      responses:
+        '200':
+          description: Event stream established
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /api/v1/agents/register:
+    post:
+      summary: Register an agent
+      description: Registers a new agent or updates an existing agent's heartbeat/details.
+      operationId: registerAgent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/AgentRegistrationRequest.yaml'
+      responses:
+        '201':
+          description: Agent registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/AgentRegistrationResponse.yaml'
+        '400':
+          description: Invalid request body or missing fields
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/APIError.yaml'
+        '500':
+          description: Internal server failure
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/APIError.yaml'
+
+  /api/v1/agents/{id}/telemetry:
+    post:
+      summary: Ingest telemetry metrics for a specific agent
+      description: Receives periodic system metric snapshots from a registered agent.
+      operationId: ingestAgentTelemetry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the agent
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/MetricPayload.yaml'
+      responses:
+        '201':
+          description: Metrics received and stored
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: accepted
+                required:
+                  - status
+        '400':
+          description: Invalid telemetry payload or mismatched agent ID
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/APIError.yaml'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/APIError.yaml'
+        '500':
+          description: Failed to store telemetry
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/APIError.yaml'
+
+  /api/v1/overview:
+    get:
+      summary: Get fleet observability overview
+      operationId: getOverview
+      responses:
+        '200':
+          description: Fleet health summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Overview'
+        '500':
+          description: Internal server failure
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/APIError.yaml'
+
+  /api/v1/agents/{id}/health:
+    get:
+      summary: Get agent health derived from telemetry freshness
+      operationId: getAgentHealth
+      parameters:
+        - $ref: '#/components/parameters/AgentID'
+      responses:
+        '200':
+          description: Agent health
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentHealth'
+        '500':
+          description: Internal server failure
+
+  /api/v1/agents/{id}/metrics:
+    get:
+      summary: Get latest agent metrics
+      operationId: getLatestMetrics
+      parameters:
+        - $ref: '#/components/parameters/AgentID'
+      responses:
+        '200':
+          description: Latest metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsResponse'
+        '404':
+          description: No telemetry available
+
+  /api/v1/agents/{id}/analytics:
+    get:
+      summary: Get historical time-series analytics for an agent
+      operationId: getAgentAnalytics
+      parameters:
+        - $ref: '#/components/parameters/AgentID'
+        - name: range
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [15m, 1h, 6h, 24h, 7d]
+            default: 1h
+      responses:
+        '200':
+          description: Aggregated time-series points suited for charting
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/AnalyticsResponse.yaml'
+
+  /api/v1/alerts:
+    get:
+      summary: List alerts
+      operationId: listAlerts
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [firing, resolved]
+        - name: agent_id
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of alerts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts:
+                    type: array
+                    items:
+                      $ref: './schemas/Alert.yaml'
+
+  /api/v1/alert-rules:
+    get:
+      summary: List alert rules
+      operationId: listAlertRules
+      responses:
+        '200':
+          description: List of configured alert rules
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rules:
+                    type: array
+                    items:
+                      $ref: './schemas/AlertRule.yaml'
+    post:
+      summary: Create alert rule
+      operationId: createAlertRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/AlertRule.yaml'
+      responses:
+        '201':
+          description: Rule created successfully
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/AlertRule.yaml'
+
+components:
+  parameters:
+    AgentID:
+      name: id
+      in: path
+      required: true
+      schema: {type: string}
+  schemas:
+    AgentHealth:
+      type: object
+      required: [agent_id, status]
+      properties:
+        agent_id: {type: string}
+        status: {type: string, enum: [healthy, stale, offline]}
+        last_seen: {type: string, format: date-time}
+        seconds_since_last_seen: {type: integer, format: int64}
+    MetricsResponse:
+      type: object
+      required: [agent_id, timestamp, metrics]
+      properties:
+        agent_id: {type: string}
+        timestamp: {type: string, format: date-time}
+        metrics: {type: object, additionalProperties: true}
+    Overview:
+      type: object
+      required: [total, healthy, stale, offline]
+      properties:
+        total: {type: integer}
+        healthy: {type: integer}
+        stale: {type: integer}
+        offline: {type: integer}
+        latest_telemetry: {type: string, format: date-time}

@@ -1,0 +1,22 @@
+type: object
+properties:
+  usage_percent:
+    type: number
+    format: float
+    description: Total aggregated CPU usage percent.
+    example: 15.4
+  per_cpu:
+    type: array
+    items:
+      type: number
+      format: float
+    description: Individual core usage percentages.
+    example: [12.1, 18.7]
+  count:
+    type: integer
+    description: Logical processor core count.
+    example: 2
+required:
+  - usage_percent
+  - per_cpu
+  - count

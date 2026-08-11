@@ -1,0 +1,36 @@
+type: object
+description: Time-series metrics aggregated for charting.
+required:
+  - agent_id
+  - range
+  - points
+properties:
+  agent_id:
+    type: string
+  range:
+    type: string
+  points:
+    type: array
+    items:
+      type: object
+      required:
+        - timestamp
+        - cpu
+        - memory
+        - disk
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        cpu:
+          type: number
+        memory:
+          type: number
+        disk:
+          type: number
+        bytes_received:
+          type: integer
+        bytes_sent:
+          type: integer
+        running_processes:
+          type: integer

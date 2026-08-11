@@ -1,0 +1,38 @@
+type: object
+properties:
+  total_bytes:
+    type: integer
+    format: int64
+    example: 16000000000
+  available_bytes:
+    type: integer
+    format: int64
+    example: 10000000000
+  used_bytes:
+    type: integer
+    format: int64
+    example: 6000000000
+  used_percent:
+    type: number
+    format: float
+    example: 37.5
+  swap_total_bytes:
+    type: integer
+    format: int64
+    example: 2000000000
+  swap_used_bytes:
+    type: integer
+    format: int64
+    example: 500000000
+  swap_used_percent:
+    type: number
+    format: float
+    example: 25.0
+required:
+  - total_bytes
+  - available_bytes
+  - used_bytes
+  - used_percent
+  - swap_total_bytes
+  - swap_used_bytes
+  - swap_used_percent

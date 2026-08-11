@@ -1,0 +1,8 @@
+type: object
+properties:
+  running_count:
+    type: integer
+    description: Count of active processes.
+    example: 185
+required:
+  - running_count

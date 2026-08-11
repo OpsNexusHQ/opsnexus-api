@@ -1,0 +1,29 @@
+type: object
+description: Alert rule configuration.
+required:
+  - id
+  - name
+  - metric
+  - operator
+  - threshold
+properties:
+  id:
+    type: string
+  name:
+    type: string
+  metric:
+    type: string
+  operator:
+    type: string
+  threshold:
+    type: number
+  duration_seconds:
+    type: integer
+  enabled:
+    type: boolean
+  created_at:
+    type: string
+    format: date-time
+  updated_at:
+    type: string
+    format: date-time

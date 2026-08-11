@@ -1,0 +1,22 @@
+type: object
+properties:
+  agent_id:
+    type: string
+    description: Unique ID of the agent reporting metrics.
+    example: "local-agent"
+  timestamp:
+    type: string
+    format: date-time
+    description: Time when metrics snapshot was collected.
+    example: "2026-08-08T20:00:00Z"
+  metrics:
+    type: object
+    properties:
+      system:
+        $ref: './SystemSnapshot.yaml'
+    required:
+      - system
+required:
+  - agent_id
+  - timestamp
+  - metrics

@@ -1,0 +1,33 @@
+type: object
+properties:
+  id:
+    type: string
+    description: Unique agent identifier.
+    example: "local-agent"
+  name:
+    type: string
+    description: Human-readable name of the agent.
+    example: "OpsNexus Local Agent"
+  hostname:
+    type: string
+    description: Hostname where the agent is running.
+    example: "localhost"
+  os:
+    type: string
+    description: Operating system of the agent.
+    example: "linux"
+  arch:
+    type: string
+    description: Architecture of the agent.
+    example: "amd64"
+  version:
+    type: string
+    description: Version release code of the agent.
+    example: "0.1.0"
+required:
+  - id
+  - name
+  - hostname
+  - os
+  - arch
+  - version

@@ -1,0 +1,38 @@
+type: object
+description: Represents an active or resolved alert instance.
+required:
+  - id
+  - rule_id
+  - agent_id
+  - status
+  - started_at
+  - last_value
+  - message
+properties:
+  id:
+    type: string
+  rule_id:
+    type: string
+  agent_id:
+    type: string
+  rule_name:
+    type: string
+  status:
+    type: string
+    enum: [firing, resolved]
+  started_at:
+    type: string
+    format: date-time
+  resolved_at:
+    type: string
+    format: date-time
+  last_value:
+    type: number
+  message:
+    type: string
+  created_at:
+    type: string
+    format: date-time
+  updated_at:
+    type: string
+    format: date-time

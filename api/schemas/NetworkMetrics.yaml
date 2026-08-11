@@ -1,0 +1,44 @@
+type: object
+properties:
+  interfaces:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "eth0"
+        bytes_sent:
+          type: integer
+          format: int64
+          example: 104857600
+        bytes_recv:
+          type: integer
+          format: int64
+          example: 524288000
+        packets_sent:
+          type: integer
+          format: int64
+          example: 75000
+        packets_recv:
+          type: integer
+          format: int64
+          example: 350000
+        errors_in:
+          type: integer
+          format: int64
+          example: 0
+        errors_out:
+          type: integer
+          format: int64
+          example: 0
+      required:
+        - name
+        - bytes_sent
+        - bytes_recv
+        - packets_sent
+        - packets_recv
+        - errors_in
+        - errors_out
+required:
+  - interfaces

@@ -1,0 +1,20 @@
+type: object
+properties:
+  cpu:
+    $ref: './CPUMetrics.yaml'
+  memory:
+    $ref: './MemoryMetrics.yaml'
+  disk:
+    $ref: './DiskMetrics.yaml'
+  network:
+    $ref: './NetworkMetrics.yaml'
+  uptime:
+    $ref: './UptimeMetrics.yaml'
+  processes:
+    $ref: './ProcessMetrics.yaml'
+  timestamp:
+    type: string
+    format: date-time
+    example: "2026-08-08T20:00:00Z"
+required:
+  - timestamp

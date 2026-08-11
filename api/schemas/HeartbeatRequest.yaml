@@ -1,0 +1,13 @@
+type: object
+properties:
+  agent_id:
+    type: string
+    description: Unique ID of the agent reporting heartbeat.
+    example: "local-agent"
+  status:
+    type: string
+    description: Reported status of the agent.
+    example: "online"
+required:
+  - agent_id
+  - status

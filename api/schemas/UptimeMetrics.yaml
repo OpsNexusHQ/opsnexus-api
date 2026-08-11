@@ -1,0 +1,9 @@
+type: object
+properties:
+  uptime_seconds:
+    type: integer
+    format: int64
+    description: Host uptime duration in seconds.
+    example: 86400
+required:
+  - uptime_seconds

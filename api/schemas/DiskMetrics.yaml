@@ -1,0 +1,42 @@
+type: object
+properties:
+  partitions:
+    type: array
+    items:
+      type: object
+      properties:
+        device:
+          type: string
+          example: "/dev/sda1"
+        mountpoint:
+          type: string
+          example: "/"
+        fstype:
+          type: string
+          example: "ext4"
+        total_bytes:
+          type: integer
+          format: int64
+          example: 50000000000
+        used_bytes:
+          type: integer
+          format: int64
+          example: 20000000000
+        free_bytes:
+          type: integer
+          format: int64
+          example: 30000000000
+        used_percent:
+          type: number
+          format: float
+          example: 40.0
+      required:
+        - device
+        - mountpoint
+        - fstype
+        - total_bytes
+        - used_bytes
+        - free_bytes
+        - used_percent
+required:
+  - partitions

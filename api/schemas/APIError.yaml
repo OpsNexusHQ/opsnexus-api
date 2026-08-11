@@ -1,0 +1,8 @@
+type: object
+properties:
+  error:
+    type: string
+    description: Human-readable error description message.
+    example: "invalid request body"
+required:
+  - error
