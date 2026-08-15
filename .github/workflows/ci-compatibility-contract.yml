@@ -11,7 +11,7 @@ permissions:
 jobs:
   compatibility-contract:
     name: ci/compatibility-contract
-    uses: OpsNexusHQ/opsnexus-deployment/.github/workflows/ci-compatibility-contract.yml@09fa80119f293b2dffe508a957c3a5f99b75509b
+    uses: OpsNexusHQ/opsnexus-deployment/.github/workflows/ci-compatibility-contract.yml@7ebdf79ace7ba4894bce10905dd8d03632e06f92
     with:
       api_sha: ${{ github.event.pull_request.head.sha || github.sha }}
       base_manifest_sha: ${{ github.event.pull_request.base.sha || github.sha }}
