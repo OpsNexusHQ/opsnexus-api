@@ -1,0 +1,73 @@
+name: API Contract CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api-contract:
+    name: ci/api-contract
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.23.2
+      - name: Validate OpenAPI contract
+        run: npx --yes @redocly/cli@2.46.1 lint --extends=minimal api/openapi.yaml
+
+  api-bundle:
+    name: ci/api-bundle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.23.2
+      - name: Bundle OpenAPI contract
+        run: npx --yes @redocly/cli@2.46.1 bundle api/openapi.yaml --output "$RUNNER_TEMP/opsnexus-openapi.bundle.yaml" --ext yaml
+      - name: Verify bundle exists
+        run: test -s "$RUNNER_TEMP/opsnexus-openapi.bundle.yaml"
+
+  api-breaking-change:
+    name: ci/api-breaking-change
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.23.2
+      - name: Install pinned oasdiff locally
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/bin"
+          archive="$RUNNER_TEMP/oasdiff_1.26.1_linux_amd64.tar.gz"
+          curl --fail --silent --show-error --location --output "$archive" https://github.com/oasdiff/oasdiff/releases/download/v1.26.1/oasdiff_1.26.1_linux_amd64.tar.gz
+          echo "ea0007fe536c7915785f754885d2afdb11352d6a14531950edf9d601a2baa674  $archive" | sha256sum --check
+          tar -xzf "$archive" -C "$RUNNER_TEMP/bin"
+          test -x "$RUNNER_TEMP/bin/oasdiff"
+      - name: Bundle explicit v0.5.0 baseline
+        run: |
+          rm -rf "$RUNNER_TEMP/baseline"
+          mkdir -p "$RUNNER_TEMP/baseline"
+          expected_baseline_sha=c52c716c9d456f6314f06b1f11f71f7bc9caa654
+          actual_baseline_sha="$(git rev-parse v0.5.0^{commit})"
+          test "$actual_baseline_sha" = "$expected_baseline_sha"
+          git archive "$expected_baseline_sha" | tar -x -C "$RUNNER_TEMP/baseline"
+          npx --yes @redocly/cli@2.46.1 bundle "$RUNNER_TEMP/baseline/api/openapi.yaml" --output "$RUNNER_TEMP/baseline.yaml" --ext yaml
+          npx --yes @redocly/cli@2.46.1 bundle api/openapi.yaml --output "$RUNNER_TEMP/revision.yaml" --ext yaml
+      - name: Check breaking changes against v0.5.0
+        run: $RUNNER_TEMP/bin/oasdiff breaking "$RUNNER_TEMP/baseline.yaml" "$RUNNER_TEMP/revision.yaml"
