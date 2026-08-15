@@ -70,4 +70,4 @@ jobs:
           npx --yes @redocly/cli@2.46.1 bundle "$RUNNER_TEMP/baseline/api/openapi.yaml" --output "$RUNNER_TEMP/baseline.yaml" --ext yaml
           npx --yes @redocly/cli@2.46.1 bundle api/openapi.yaml --output "$RUNNER_TEMP/revision.yaml" --ext yaml
       - name: Check breaking changes against v0.5.0
-        run: $RUNNER_TEMP/bin/oasdiff breaking --base "$RUNNER_TEMP/baseline.yaml" --revision "$RUNNER_TEMP/revision.yaml"
+        run: $RUNNER_TEMP/bin/oasdiff breaking "$RUNNER_TEMP/baseline.yaml" "$RUNNER_TEMP/revision.yaml"
