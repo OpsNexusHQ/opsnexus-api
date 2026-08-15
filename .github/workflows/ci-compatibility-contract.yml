@@ -1,0 +1,16 @@
+name: Compatibility Contract
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compatibility-contract:
+    name: ci/compatibility-contract
+    uses: OpsNexusHQ/opsnexus-deployment/.github/workflows/ci-compatibility-contract.yml@main
+    with:
+      api_sha: ${{ github.event.pull_request.head.sha || github.sha }}
